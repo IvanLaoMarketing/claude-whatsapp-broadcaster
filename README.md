@@ -52,7 +52,7 @@ altre due forniscono il riferimento tecnico per gli scenari avanzati.
 
 ### Opzione B — Dai sorgenti
 
-Clona la repo: `.claude-plugin/plugin.json` e `skills/` sono pronti all'uso per Claude Code.
+Clona la repo: `.claude-plugin/plugin.json` e `skills/` sono pronti all'uso per Claude Cowork.
 
 ## Primo utilizzo
 
