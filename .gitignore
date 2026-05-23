@@ -1,0 +1,25 @@
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Configurazioni locali con credenziali reali
+waba_config.json
+!starter-kit/DEMO*/waba_config.json
+!starter-kit/DEMO*/**/waba_config.json
+!skills/**/waba_config.example.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Env
+.env
+.env.local
+
+# Editor
+.idea/
+.vscode/

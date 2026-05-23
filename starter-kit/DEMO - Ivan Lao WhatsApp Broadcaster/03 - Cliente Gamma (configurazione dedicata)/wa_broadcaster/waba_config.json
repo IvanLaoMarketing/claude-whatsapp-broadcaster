@@ -1,0 +1,18 @@
+{
+  "_demo": true,
+  "_descrizione": "CONFIGURAZIONE DEMO LOCALE - esempio di override per-progetto. Quando una sottocartella cliente ha una sua waba_config.json dentro wa_broadcaster/, questa ha la PRECEDENZA sulla config condivisa nella radice. Utile quando un cliente usa credenziali WABA proprie. Popola i dati reali e rimuovi _demo.",
+  "accounts": [
+    {
+      "nome_account": "Numero Cliente Gamma",
+      "gruppo_account": "Cliente Gamma",
+      "waba_id": "INSERISCI_WABA_ID",
+      "phone_number_id": "INSERISCI_PHONE_NUMBER_ID",
+      "access_token": "INSERISCI_SYSTEM_USER_TOKEN",
+      "phone_number": "INSERISCI_NUMERO",
+      "whatsapp_name": "INSERISCI_NOME_WHATSAPP",
+      "default_region": "IT",
+      "graph_version": "v22.0",
+      "daily_limit_override": null
+    }
+  ]
+}

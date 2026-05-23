@@ -1,0 +1,29 @@
+{
+  "_descrizione": "Configurazione multi-account Ivan Lao WhatsApp Broadcaster. Rinomina in 'waba_config.json' e compila i campi. NON condividere e NON committare su Git: contiene un token sensibile.",
+  "accounts": [
+    {
+      "nome_account": "Cliente Demo - Marketing",
+      "gruppo_account": "Italia",
+      "waba_id": "INSERISCI_WABA_ID",
+      "phone_number_id": "INSERISCI_PHONE_NUMBER_ID",
+      "access_token": "INSERISCI_SYSTEM_USER_TOKEN",
+      "phone_number": "+39 055 0000000",
+      "whatsapp_name": "Demo Srl",
+      "default_region": "IT",
+      "graph_version": "v22.0",
+      "daily_limit_override": null
+    },
+    {
+      "nome_account": "Cliente Demo - Assistenza",
+      "gruppo_account": "Italia",
+      "waba_id": "INSERISCI_WABA_ID",
+      "phone_number_id": "INSERISCI_PHONE_NUMBER_ID",
+      "access_token": "INSERISCI_SYSTEM_USER_TOKEN",
+      "phone_number": "+39 06 0000000",
+      "whatsapp_name": "Demo Srl Support",
+      "default_region": "IT",
+      "graph_version": "v22.0",
+      "daily_limit_override": 1000
+    }
+  ]
+}

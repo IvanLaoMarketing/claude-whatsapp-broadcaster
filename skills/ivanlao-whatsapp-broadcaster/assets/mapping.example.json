@@ -1,0 +1,16 @@
+{
+  "_descrizione": "Modello di mapping per l'invio. Collega le colonne dell'Excel ai placeholder del template. Vedi references/invio-massivo.md per la spec completa.",
+  "phone_column": "Telefono",
+  "default_region": "IT",
+  "name_columns": ["Nome", "Cognome"],
+  "header": {
+    "format": "IMAGE",
+    "link": "https://esempio.it/banner-campagna.jpg"
+  },
+  "header_text_params": [],
+  "body_params": [
+    { "placeholder": "1", "from": "column",  "value": "Nome" },
+    { "placeholder": "2", "from": "literal", "value": "promo di primavera" }
+  ],
+  "button_url_params": []
+}

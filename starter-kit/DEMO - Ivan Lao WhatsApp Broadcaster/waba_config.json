@@ -1,0 +1,42 @@
+{
+  "_demo": true,
+  "_descrizione": "CONFIGURAZIONE DEMO - tutti i valori sono segnaposto. Apri questa cartella con la skill Ivan Lao WhatsApp Broadcaster: al primo avvio ti guida a inserire le credenziali WABA reali. Dopo la compilazione rimuovi il campo _demo. Questa config nella radice e' CONDIVISA: tutte le sottocartelle cliente la ereditano.",
+  "accounts": [
+    {
+      "nome_account": "Numero Marketing Italia",
+      "gruppo_account": "Italia",
+      "waba_id": "INSERISCI_WABA_ID",
+      "phone_number_id": "INSERISCI_PHONE_NUMBER_ID",
+      "access_token": "INSERISCI_SYSTEM_USER_TOKEN",
+      "phone_number": "INSERISCI_NUMERO",
+      "whatsapp_name": "INSERISCI_NOME_WHATSAPP",
+      "default_region": "IT",
+      "graph_version": "v22.0",
+      "daily_limit_override": null
+    },
+    {
+      "nome_account": "Numero Assistenza Italia",
+      "gruppo_account": "Italia",
+      "waba_id": "INSERISCI_WABA_ID",
+      "phone_number_id": "INSERISCI_PHONE_NUMBER_ID",
+      "access_token": "INSERISCI_SYSTEM_USER_TOKEN",
+      "phone_number": "INSERISCI_NUMERO",
+      "whatsapp_name": "INSERISCI_NOME_WHATSAPP",
+      "default_region": "IT",
+      "graph_version": "v22.0",
+      "daily_limit_override": null
+    },
+    {
+      "nome_account": "Numero Mercato Spagna",
+      "gruppo_account": "Estero",
+      "waba_id": "INSERISCI_WABA_ID",
+      "phone_number_id": "INSERISCI_PHONE_NUMBER_ID",
+      "access_token": "INSERISCI_SYSTEM_USER_TOKEN",
+      "phone_number": "INSERISCI_NUMERO",
+      "whatsapp_name": "INSERISCI_NOME_WHATSAPP",
+      "default_region": "ES",
+      "graph_version": "v22.0",
+      "daily_limit_override": null
+    }
+  ]
+}
