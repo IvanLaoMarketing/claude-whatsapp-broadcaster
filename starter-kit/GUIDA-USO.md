@@ -40,24 +40,45 @@ verifica i dati e invia in sicurezza.
 
 ## 2. Requisiti
 
-- **Claude Cowork** installato.
+### Claude Desktop / Cowork
+- App **Claude Desktop** (Mac o Windows). Non funziona da claude.ai web/mobile.
+- **Cowork mode** attivo con una cartella di lavoro selezionata.
+- In `Impostazioni → Funzionalità`:
+  - *Esecuzione di codice cloud e creazione di file* = **ON**
+  - *Consenti traffico di rete in uscita* = **ON**
+  - *Lista domini consentiti* = **"Tutti i domini"** (oppure aggiungi
+    manualmente `graph.facebook.com`).
+- Senza queste impostazioni la sandbox non raggiunge la Graph API di Meta e
+  l'invio non parte: la skill se ne accorge al primo avvio e ti guida.
+
+### Meta / WhatsApp Business
 - Un account **Meta Business** con app WhatsApp e numero verificato.
-- Un **System User Token permanente** con i permessi `whatsapp_business_messaging`
-  e `whatsapp_business_management`.
+- Un **System User Token permanente** con i permessi
+  `whatsapp_business_messaging` e `whatsapp_business_management`.
 - Almeno un **template approvato** da Meta.
-- **Python 3** con le librerie `requests`, `openpyxl`, `phonenumbers`.
+
+### Python (nella sandbox Cowork)
+- **Python 3.10+** con `requests`, `openpyxl`, `phonenumbers`.
+- Li installa automaticamente lo script `env_check.py` al primo avvio.
 
 ## 3. Installazione
 
-1. Installa il plugin: apri il file `ivanlao-whatsapp-broadcaster.plugin` in
-   Claude Cowork e conferma.
-2. Installa le dipendenze Python (una sola volta):
-   ```
-   pip install --break-system-packages requests openpyxl phonenumbers
-   ```
-3. Non serve avviare nulla con uno slash: la skill si attiva **da sola** quando
-   chiedi qualcosa come *"invia questo Excel su WhatsApp"* o *"configura un
-   account WABA"*.
+1. **Installa il plugin** — apri il file `ivanlao-whatsapp-broadcaster.plugin`
+   in Claude Cowork e conferma.
+2. **Configura le impostazioni di Claude Desktop** come indicato nella sezione
+   *Requisiti → Claude Desktop / Cowork*. Senza queste impostazioni la sandbox
+   resta isolata dalla rete e l'invio non funziona.
+3. **Check ambiente automatico** — al primo avvio la skill esegue
+   `scripts/env_check.py` nella sandbox. Verifica Python, librerie, accesso a
+   `graph.facebook.com` e installa ciò che manca. Se qualcosa è bloccato ti
+   guida a risolverlo.
+4. **Non serve uno slash command**: la skill si attiva da sola quando chiedi
+   *"invia questo Excel su WhatsApp"*, *"configura un account WABA"* o simili.
+
+> **Sandbox impossibile da sbloccare (policy IT Team/Enterprise)?** Il plugin
+> include `references/fallback-alternative.md` con cinque alternative pronte:
+> Make, n8n, Google Apps Script, terminale locale Mac/Win, Postman. La skill
+> propone l'opzione più adatta al tuo volume e al tuo ecosistema.
 
 ## 4. La configurazione degli account
 
@@ -147,17 +168,19 @@ questa struttura: aprila per vederla in concreto.
 
 ## 6. Primo avvio
 
-Apri la cartella di lavoro con Claude Cowork e scrivi una richiesta, ad esempio
-*"configura il mio account WABA"*. La skill:
-
-1. Cerca `waba_config.json` nelle due posizioni.
-2. Se non lo trova, o se trova una **configurazione demo** (campo `_demo: true`),
-   avvia l'**onboarding guidato**: ti chiede dove salvare la configurazione
-   (condivisa o di progetto) e raccoglie i dati degli account.
-3. Verifica subito le credenziali.
-
-Nella cartella DEMO la configurazione è un modello con valori segnaposto: al
-primo avvio va sempre completata con i dati reali.
+1. **Apri Claude Cowork** e seleziona la cartella di lavoro.
+2. **Verifica ambiente** (v1.4.0): la skill esegue automaticamente
+   `python3 wa_broadcaster/scripts/env_check.py`. Output atteso:
+   tutti i punti **OK**, incluso `network_graph_api: HTTP 4xx` (la sandbox
+   raggiunge `graph.facebook.com`). Se vedi `403 blocked-by-allowlist`,
+   apri Impostazioni → Funzionalità → *Lista domini consentiti* =
+   "Tutti i domini" e ripeti.
+3. **Scrivi una richiesta operativa** in italiano, ad esempio:
+   *"Configura gli account WABA"* oppure *"Manda questo Excel su WhatsApp"*.
+4. La skill carica `waba_config.json` e copia gli script `wab.py` e
+   `env_check.py` nella sottocartella `wa_broadcaster/` del progetto.
+5. Da quel momento ogni invio passa per il flusso guidato: scelta template,
+   limiti, mapping, dry-run, conferma esplicita, esecuzione.
 
 ## 7. Inviare una campagna: il flusso completo
 
@@ -228,12 +251,16 @@ creare un nuovo template invece di modificarne uno approvato.
 
 | Problema | Causa probabile | Soluzione |
 |----------|-----------------|-----------|
+| Claude propone Chrome MCP invece di inviare via Bash | Sandbox bloccata o skill non triggerata | Esegui `python3 wa_broadcaster/scripts/env_check.py` e segui i fix indicati. Vedi anche `references/onboarding-ambiente.md`. |
+| `403 blocked-by-allowlist` su `graph.facebook.com` | Allowlist Cowork ristretta | Impostazioni Claude Desktop → Funzionalità → *Lista domini consentiti* = "Tutti i domini". |
+| `connection refused` / `DNS bloccato` nella sandbox | Network egress OFF | Impostazioni Claude → *Consenti traffico di rete in uscita* = ON. |
+| La sandbox è bloccata e non posso modificare i settings (Team/Enterprise) | Policy IT del cliente | Usa un fallback: vedi `references/fallback-alternative.md` (Make, n8n, Apps Script, terminale locale, Postman). |
 | Errore `401` sulle credenziali | Token scaduto o errato | Genera un nuovo System User Token. |
 | "Configurazione demo" all'avvio | Config con valori segnaposto | Completa l'onboarding con i dati reali. |
 | Numeri segnalati come non validi | Formato errato nell'Excel | Correggi i numeri o salva la colonna come testo. |
 | Limite di invio raggiunto | Tier giornaliero esaurito | Passa all'invio a blocchi. |
 | L'Excel non viene salvato | File aperto in Excel | Chiudi il file e rilancia. |
-| Libreria Python mancante | Dipendenze non installate | `pip install --break-system-packages requests openpyxl phonenumbers` |
+| Libreria Python mancante | Dipendenze non installate | `pip install --break-system-packages requests openpyxl phonenumbers` (lo fa `env_check.py` automaticamente). |
 
 ## 13. Riferimento rapido dei comandi
 
@@ -241,7 +268,8 @@ Il motore della skill è `wab.py`. Comandi principali:
 
 | Comando | Funzione |
 |---------|----------|
-| `validate` | Verifica le credenziali (con `--gruppo` filtra un gruppo). |
+| `env_check.py` | **Da eseguire per primo (v1.4.0):** verifica sandbox, Python, librerie, network egress, allowlist proxy. Auto-installa le librerie mancanti. |
+| `validate` | Verifica le credenziali WABA (con `--gruppo` filtra un gruppo). |
 | `templates` | Elenca i template di un account. |
 | `template-create` / `template-delete` | Crea o elimina un template. |
 | `limits` | Mostra limiti di invio e quality rating. |

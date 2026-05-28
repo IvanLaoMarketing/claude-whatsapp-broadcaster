@@ -14,20 +14,34 @@ WhatsApp Business con la skill *Ivan Lao WhatsApp Broadcaster*.
 | `DEMO - Ivan Lao WhatsApp Broadcaster/` | Una cartella di esempio con la struttura multicliente consigliata. |
 | `INSTALLAZIONE.md` | Questo file. |
 
-## 3 passi per partire
+## 4 passi per partire
 
 1. **Installa il plugin** — apri `ivanlao-whatsapp-broadcaster.plugin` con
    Claude Cowork e conferma l'installazione.
 
-2. **Installa le dipendenze Python** — una sola volta:
-   ```
-   pip install --break-system-packages requests openpyxl phonenumbers
-   ```
+2. **Configura Claude Desktop per usare la rete della sandbox** (v1.4.0)
+   — Impostazioni → Funzionalità:
+   - *Esecuzione di codice cloud e creazione di file* = **ON**
+   - *Consenti traffico di rete in uscita* = **ON**
+   - *Lista domini consentiti* = **"Tutti i domini"** (o aggiungi
+     `graph.facebook.com` manualmente).
 
-3. **Prova con la cartella DEMO** — apri in Claude Cowork la cartella
+   Senza questo passaggio Claude proverà a usare Chrome MCP invece della
+   Graph API di Meta, e l'invio non funzionerà.
+
+3. **Verifica ambiente** — la skill esegue automaticamente
+   `scripts/env_check.py` al primo avvio. Controlla Python, librerie e
+   raggiungibilità di `graph.facebook.com`. Installa anche le dipendenze
+   mancanti.
+
+4. **Prova con la cartella DEMO** — apri in Claude Cowork la cartella
    `DEMO - Ivan Lao WhatsApp Broadcaster` e scrivi, ad esempio:
    *"Configura gli account WABA"*. La skill rileva la configurazione demo e ti
    guida a inserire i dati reali.
+
+> **La sandbox è bloccata dalla policy IT (account Team/Enterprise)?** Vedi
+> `skills/ivanlao-whatsapp-broadcaster/references/fallback-alternative.md`
+> per Make, n8n, Google Apps Script, terminale locale o Postman.
 
 ## Prossimi passi
 
