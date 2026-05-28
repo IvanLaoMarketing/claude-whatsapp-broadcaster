@@ -67,20 +67,68 @@ riga per riga, resume). Tu, la skill, fai il lavoro intelligente: capire cosa
 vuole l'utente, scegliere il template giusto, costruire il mapping, spiegare i
 rischi. **Non scrivere loop di invio a mano: usa sempre `wab.py`.**
 
-### Passo 0 — Preparazione dell'ambiente di lavoro
+### Passo 0 — Check ambiente Claude (OBBLIGATORIO, prima volta e in caso di errore)
 
-Alla prima esecuzione in un progetto:
+**Prima di qualsiasi altra azione** verifica che la sandbox Claude Cowork del
+cliente sia configurata correttamente. Senza questo passaggio l'invio via Bash
+non funziona e tu finiresti col proporre fallback inutili (es. Chrome MCP) o
+bloccare l'utente con errori oscuri tipo `403 blocked-by-allowlist`.
 
-1. Copia `scripts/wab.py` e la cartella `assets/` di questa skill **dentro la
-   cartella del progetto**, in una sottocartella `wa_broadcaster/`. Così
-   configurazione, Excel, mapping e log restano insieme e il task programmato
-   (invio a blocchi) avrà percorsi stabili nel tempo.
-2. Installa le dipendenze Python (una sola volta):
+Esegui sempre, **al primo avvio della skill nel progetto** e **ogni volta che
+un comando `wab.py` fallisce con errore di rete**:
+
+```
+python3 wa_broadcaster/scripts/env_check.py
+```
+
+(al primo avvio lo script `env_check.py` non è ancora copiato nel progetto:
+eseguilo direttamente dal percorso della skill, oppure copialo subito insieme
+a `wab.py` — vedi Passo 0.5.)
+
+Lo script verifica 8 punti:
+
+1. **Ambiente** — siamo davvero nella sandbox Cowork (non nel terminale Mac
+   del cliente).
+2. **Python ≥ 3.10**.
+3. **pip** disponibile.
+4. **curl** disponibile.
+5. **Librerie**: `requests`, `openpyxl`, `phonenumbers` (le installa
+   automaticamente se mancanti).
+6. **Auto-install** riuscito.
+7. **Network egress verso `graph.facebook.com`** (HTTP 4xx atteso senza
+   token, *non* deve essere 403 `blocked-by-allowlist`).
+
+**Decisioni in base all'esito:**
+
+| Stato `env_check` | Cosa fai |
+|-------------------|----------|
+| `all_ok = true` | Procedi con il Passo 0.5 e il flusso standard. |
+| Libreria mancante + auto-install OK | Lo script l'ha già risolto. Continua. |
+| `network_graph_api: 403 blocked-by-allowlist` | **Non procedere**. Apri `references/onboarding-ambiente.md` e guida il cliente a impostare `Lista domini consentiti = "Tutti i domini"` nelle Impostazioni Claude. |
+| `network_graph_api: rete sandbox disabilitata` | Stesso: il cliente deve attivare *Consenti traffico di rete in uscita*. |
+| `ambiente: locale` | La skill sta girando fuori dalla sandbox: indirizza il cliente a Claude Desktop + Cowork. |
+| Sandbox impossibile da sbloccare (account Enterprise / policy IT) | Apri `references/fallback-alternative.md` e proponi la soluzione adatta al volume (Make, n8n, Google Apps Script, terminale locale, Postman). |
+
+**Regola d'oro:** se il check fallisce, **non ripiegare mai su Chrome MCP per
+inviare i template**. Chrome non è uno strumento adatto a campagne massive
+WhatsApp e non sostituisce Graph API. Le uniche alternative valide sono nel
+file `fallback-alternative.md`.
+
+### Passo 0.5 — Preparazione della cartella di progetto
+
+Alla prima esecuzione in un progetto, **dopo** che `env_check` è verde:
+
+1. Copia `scripts/wab.py`, `scripts/env_check.py` e la cartella `assets/` di
+   questa skill **dentro la cartella del progetto**, in una sottocartella
+   `wa_broadcaster/`. Così configurazione, Excel, mapping e log restano
+   insieme e il task programmato (invio a blocchi) avrà percorsi stabili.
+2. Le dipendenze Python sono già installate da `env_check.py`. In caso di
+   reinstallazione manuale:
    ```
    pip install --break-system-packages requests openpyxl phonenumbers
    ```
-3. Gli script vanno eseguiti con `python3` nel terminale sandbox. Usa il
-   percorso della cartella di progetto così come è montata nel sandbox.
+3. Gli script vanno eseguiti con `python3` nella sandbox. Usa il percorso
+   della cartella di progetto così come è montata nel sandbox.
 
 ---
 
@@ -414,9 +462,12 @@ Prima di lanciare un `send` reale, verifica di aver fatto tutto:
 
 | File | Quando leggerlo |
 |------|-----------------|
+| `references/onboarding-ambiente.md` | **PRIMA COSA**: come impostare Claude Desktop perché la sandbox raggiunga Graph API |
+| `references/fallback-alternative.md` | Soluzioni alternative quando la sandbox è bloccata: Make, n8n, Apps Script, terminale locale, Postman |
 | `references/setup-configurazione.md` | Dove trovare waba_id/phone_id/token, token permanenti, sicurezza, dipendenze |
 | `references/gestione-waba.md` | Anatomia dei template, creazione/modifica/cancellazione, lettura account |
 | `references/invio-massivo.md` | Spec completa di `mapping.json`, invio a blocchi, errori di invio |
+| `scripts/env_check.py` | **Esegui sempre per primo**: verifica sandbox, librerie, network egress, allowlist proxy |
 | `scripts/wab.py` | Motore operativo (tutti i sottocomandi). Esegui `python3 wab.py -h` |
 | `assets/waba_config.example.json` | Modello di configurazione multi-account |
 | `assets/mapping.example.json` | Modello di mapping per l'invio |
@@ -436,6 +487,9 @@ restano disponibili per scenari avanzati: webhook, chatbot, messaggi interattivi
 | Invio → `131049` / `130472` | Limite o pacing raggiunto | Passa all'invio a blocchi su più giorni |
 | `wb.save` / Excel non salvabile | File aperto in Excel | Chiudi il file e rilancia: i già `OK` non si reinviano |
 | Libreria Python mancante | Dipendenze non installate | `pip install --break-system-packages requests openpyxl phonenumbers` |
+| `403 blocked-by-allowlist` su Graph API | Sandbox Cowork con allowlist ristretta | Settings Claude -> Funzionalità -> Lista domini = "Tutti i domini" (vedi `references/onboarding-ambiente.md`) |
+| Claude propone Chrome MCP per inviare | Tool Bash non disponibile o skill non triggerata | Esegui `env_check.py`; abilita Esecuzione codice cloud nelle Impostazioni |
+| Sandbox impossibile da sbloccare (Team/Enterprise) | Policy IT del cliente | Passa a un fallback (`references/fallback-alternative.md`): Make, n8n, Apps Script, terminale locale |
 
 Per i codici di errore Meta consulta anche la skill `whatsapp-cloud-api`
 (`references/api-reference.md`).
