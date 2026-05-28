@@ -57,19 +57,42 @@ Clona la repo: `.claude-plugin/plugin.json` e `skills/` sono pronti all'uso per 
 ## Primo utilizzo
 
 1. Apri la cartella di un progetto in Cowork.
-2. Chiedi, ad esempio: *"Configura un account WABA"* oppure *"Invia questo
+2. **Esegui il check ambiente** (la skill lo fa per te al primo avvio):
+   `python3 wa_broadcaster/scripts/env_check.py`. Verifica Python, librerie,
+   raggiungibilità di `graph.facebook.com` dalla sandbox.
+3. Se il check segnala blocchi di rete, segui
+   `skills/ivanlao-whatsapp-broadcaster/references/onboarding-ambiente.md` per
+   impostare Claude Desktop (Impostazioni → Funzionalità → *Lista domini
+   consentiti = "Tutti i domini"*).
+4. Chiedi, ad esempio: *"Configura un account WABA"* oppure *"Invia questo
    Excel di contatti su WhatsApp"*: la skill si attiva e ti guida.
-3. Alla prima esecuzione la skill crea `waba_config.json` (credenziali) e copia
+5. Alla prima esecuzione la skill crea `waba_config.json` (credenziali) e copia
    il proprio motore nella cartella del progetto.
+
+> **Sandbox bloccata e non sbloccabile?** Vedi
+> `references/fallback-alternative.md`: Make, n8n, Google Apps Script,
+> terminale locale, Postman, webhook hostato.
 
 ## Requisiti
 
+### Claude Desktop / Cowork
+- App **Claude Desktop** (Mac/Win), non Web.
+- **Cowork mode** con cartella selezionata.
+- Impostazioni → Funzionalità:
+  - *Esecuzione di codice cloud e creazione di file* = **ON**
+  - *Consenti traffico di rete in uscita* = **ON**
+  - *Lista domini consentiti* = **"Tutti i domini"** (o lista che include
+    `graph.facebook.com`).
+
+### Meta / WhatsApp Business
 - Account Meta Business con app WhatsApp e numero verificato.
-- System User Token permanente con i permessi `whatsapp_business_messaging` e
-  `whatsapp_business_management`.
+- **System User Token permanente** con i permessi
+  `whatsapp_business_messaging` e `whatsapp_business_management`.
 - Almeno un template approvato.
-- Python 3 con `requests`, `openpyxl`, `phonenumbers`.
-- Accesso di rete a `graph.facebook.com`.
+
+### Python
+- Python 3.10+ con `requests`, `openpyxl`, `phonenumbers`
+  (lo script `env_check.py` li installa automaticamente).
 
 ## Nota legale
 
